@@ -4,7 +4,6 @@ using System.Text;
 using UnityEngine;
 using System.Threading;
 using TMPro;
-using UnityEngine.tvOS;
 using UnityEngine.UI;
 using System.Linq;
 using System;
@@ -76,7 +75,7 @@ public class ClientTCP : MonoBehaviour
 
         byte[] data = new byte[1024];
 
-        data = Encoding.ASCII.GetBytes("Andreu es un gatito salvaje");
+        data = Encoding.ASCII.GetBytes("Hello from " + inputField_IP.text);
         server.Send(data);
     }
 

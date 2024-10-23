@@ -93,7 +93,7 @@ public class ServerUDP : MonoBehaviour
         //TO DO 4
         //Use socket.SendTo to send a ping using the remote we stored earlier.
         byte[] data = new byte[1024];
-        string welcome = "Ping";
+        string welcome = "UDP Ping";
 
         data = Encoding.ASCII.GetBytes(welcome);
         socket.SendTo(data, Remote);

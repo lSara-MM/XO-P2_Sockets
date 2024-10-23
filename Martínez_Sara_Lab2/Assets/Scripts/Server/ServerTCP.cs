@@ -124,7 +124,7 @@ public class ServerTCP : MonoBehaviour
     //Just call the socket's send function and encode the string.
     void Send(User user)
     {
-        string ping = "ping";
+        string ping = "TCP Ping";
         byte[] data = new byte[1024];
         
         data = Encoding.ASCII.GetBytes(ping);
