@@ -7,6 +7,7 @@ public class PlayerControllerClient : MonoBehaviour
     public int movSpeed = 100;
     public GameObject consoleUDP;
     public GameObject consoleTCP;
+    public GameObject consoleInput;
 
     Animator animator;
 
@@ -59,12 +60,12 @@ public class PlayerControllerClient : MonoBehaviour
         if (nearUDP && Input.GetKeyDown("e"))
         {
             consoleUDP.SetActive(!consoleUDP.activeSelf);
-
+            consoleInput.SetActive(consoleUDP.activeSelf);
         }
         if (nearTCP && Input.GetKeyDown("e"))
         {
             consoleTCP.SetActive(!consoleTCP.activeSelf);
-
+            consoleInput.SetActive(consoleTCP.activeSelf);
         }
     }
 
@@ -82,18 +83,17 @@ public class PlayerControllerClient : MonoBehaviour
     }
     private void OnTriggerExit(Collider other)
     {
-
         if (other.gameObject.CompareTag("ComputerTCP"))
         {
             nearTCP = false;
             consoleTCP.SetActive(false);
+            consoleInput.SetActive(false);
         }
         if (other.gameObject.CompareTag("ComputerUDP"))
         {
             nearUDP = false;
             consoleUDP.SetActive(false);
+            consoleInput.SetActive(false);
         }
     }
 }
-
-

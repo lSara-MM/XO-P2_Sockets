@@ -5,6 +5,9 @@ using UnityEngine;
 using System.Threading;
 using TMPro;
 using UnityEngine.tvOS;
+using UnityEngine.UI;
+using System.Linq;
+using System;
 
 public class ClientTCP : MonoBehaviour
 {
@@ -13,24 +16,30 @@ public class ClientTCP : MonoBehaviour
     string clientText;
     Socket server;
 
+    public InputField inputField_IP;
+    public InputField inputField_Text;
+
     // Start is called before the first frame update
     void Start()
     {
         UItext = UItextObj.GetComponent<TextMeshProUGUI>();
-
     }
 
     // Update is called once per frame
     void Update()
     {
         UItext.text = clientText;
-
     }
 
     public void StartClient()
     {
-        Thread connect = new Thread(Connect);
-        connect.Start();
+        if (ValidateIPv4(inputField_IP.text))
+        {
+            inputField_IP.gameObject.transform.parent.gameObject.SetActive(false);
+
+            Thread connect = new Thread(Connect);
+            connect.Start();
+        }
     }
 
     void Connect()
@@ -42,7 +51,7 @@ public class ClientTCP : MonoBehaviour
         //When calling connect and succeeding, our server socket will create a
         //connection between this endpoint and the server's endpoint
 
-        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse("192.168.56.1"), 9050);
+        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(inputField_IP.text), 9050);
         server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         server.Connect(ipep);
 
@@ -82,5 +91,24 @@ public class ClientTCP : MonoBehaviour
         {
             clientText = clientText += "\n" + Encoding.ASCII.GetString(data, 0, recv);
         }
+    }
+
+    // Validate the IP the user has introduced. Return true if valid IP
+    public bool ValidateIPv4(string ipString)
+    {
+        if (String.IsNullOrEmpty(ipString))
+        {
+            return false;
+        }
+
+        string[] splitValues = ipString.Split('.');
+        if (splitValues.Length != 4)
+        {
+            return false;
+        }
+
+        byte tempForParsing;
+
+        return splitValues.All(r => byte.TryParse(r, out tempForParsing));
     }
 }

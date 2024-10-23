@@ -5,6 +5,10 @@ using UnityEngine;
 using System.Threading;
 using TMPro;
 
+using UnityEngine.UI;
+using System.Linq;
+using System;
+
 public class ClientUDP : MonoBehaviour
 {
     Socket socket;
@@ -12,16 +16,23 @@ public class ClientUDP : MonoBehaviour
     TextMeshProUGUI UItext;
     string clientText;
 
+    public InputField inputField_IP;
+    public InputField inputField_Text;
+
     // Start is called before the first frame update
     void Start()
     {
         UItext = UItextObj.GetComponent<TextMeshProUGUI>();
-
     }
     public void StartClient()
     {
-        Thread mainThread = new Thread(Send);
-        mainThread.Start();
+        if (ValidateIPv4(inputField_IP.text))
+        {
+            inputField_IP.gameObject.transform.parent.gameObject.SetActive(false);
+
+            Thread mainThread = new Thread(Send);
+            mainThread.Start();
+        }
     }
 
     void Update()
@@ -36,7 +47,7 @@ public class ClientUDP : MonoBehaviour
         //we are going to send a message to establish our communication so we need an endpoint
         //We need the server's IP and the port we've binded it to before
         //Again, initialize the socket
-        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse("192.168.56.1"), 9050);
+        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(inputField_IP.text), 9050);
 
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
@@ -46,7 +57,7 @@ public class ClientUDP : MonoBehaviour
         //as a parameter on it's SendTo() method
 
         byte[] data = new byte[1024];
-        string handshake = "Andreu dice miau miau";
+        string handshake = "User connected";
 
         data = Encoding.ASCII.GetBytes(handshake);
         socket.SendTo(data, ipep);
@@ -74,6 +85,25 @@ public class ClientUDP : MonoBehaviour
 
         clientText = ("Message received from {0}: " + Remote.ToString());
         clientText = clientText += "\n" + Encoding.ASCII.GetString(data, 0, recv);
+    }
+
+    // Validate the IP the user has introduced. Return true if valid IP
+    public bool ValidateIPv4(string ipString)
+    {
+        if (String.IsNullOrEmpty(ipString))
+        {
+            return false;
+        }
+
+        string[] splitValues = ipString.Split('.');
+        if (splitValues.Length != 4)
+        {
+            return false;
+        }
+
+        byte tempForParsing;
+
+        return splitValues.All(r => byte.TryParse(r, out tempForParsing));
     }
 }
 
